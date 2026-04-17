@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Assign Candidate to Job -->
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Assign Candidate to Job</h1>
+            <p class="page-subtitle">Create a new application by linking a candidate to an open position.</p>
+        </div>
+        <a href="/applications" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="content-card" style="max-width: 600px;">
+        <div class="content-card-body">
+            <form th:action="@{/applications/new}" th:object="${applicationRequest}" method="post">
+
+                <div class="mb-4">
+                    <label for="candidateId" class="form-label fw-bold">Select Candidate</label>
+                    <select class="form-select" id="candidateId" th:field="*{candidateId}" required>
+                        <option value="" disabled selected>Choose a candidate…</option>
+                        <option th:each="c : ${candidates}"
+                                th:value="${c.id}"
+                                th:text="${c.fullName} + ' (' + ${c.email} + ')'">Candidate</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="jobId" class="form-label fw-bold">Select Job Position</label>
+                    <select class="form-select" id="jobId" th:field="*{jobId}" required>
+                        <option value="" disabled selected>Choose a job…</option>
+                        <option th:each="j : ${jobs}"
+                                th:value="${j.id}"
+                                th:text="${j.title} + ' — ' + ${j.department} + ' (' + ${j.status} + ')'">Job</option>
+                    </select>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn-add"><i class="bi bi-check-lg"></i> Create Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

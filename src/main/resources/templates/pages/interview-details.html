@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 border-bottom pb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div class="avatar-lg shadow-sm" style="width: 72px; height: 72px; font-size: 28px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border-radius: 20px;">
+                <i class="bi bi-calendar-event"></i>
+            </div>
+            <div>
+                <h1 class="page-title mb-1" style="font-weight: 700; color: #1e293b;">Interview Round <span th:text="${interview.round}">1</span></h1>
+                <p class="page-subtitle mb-0 text-muted">For <a th:href="@{/jobs/{id}(id=${interview.jobId})}" th:text="${interview.jobTitle}" class="text-decoration-none fw-bold">Job</a></p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/interviews" class="btn btn-outline-secondary" style="border-radius: 8px;">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="content-card shadow-sm border-0 mb-4" style="border-radius: 12px; overflow: hidden;">
+        <div class="row g-0">
+            <div class="col-md-6 border-end border-bottom">
+                <div class="p-4 d-flex align-items-start gap-3">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                        <i class="bi bi-person text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Candidate</small>
+                        <a th:href="@{/candidates/{id}(id=${interview.candidateId})}" th:text="${interview.candidateName}" class="text-decoration-none fw-bold fs-5 text-dark">Candidate Name</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 border-bottom bg-light">
+                <div class="p-4 d-flex align-items-start gap-3">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                        <i class="bi bi-person-badge text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Interviewer</small>
+                        <span th:text="${interview.interviewerName}" class="fw-bold fs-5 text-dark">Interviewer Name</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 border-end">
+                <div class="p-4 d-flex align-items-start gap-3">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                        <i class="bi bi-clock text-warning fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-uppercase text-muted fw-bold d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Schedule</small>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fs-6 fw-bold text-dark"><i class="bi bi-calendar3 text-muted me-1"></i> <span th:text="${interview.date}">Date</span></span>
+                            <span class="text-muted">•</span>
+                            <span class="fs-6 fw-bold text-dark"><i class="bi bi-time text-muted me-1"></i> <span th:text="${interview.time}">Time</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 bg-light">
+                <div class="p-4 d-flex align-items-start gap-3">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                        <i class="bi bi-info-circle text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-uppercase text-muted fw-bold d-block mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px;">Status</small>
+                        <span class="badge-status" th:classappend="'badge-' + ${interview.status.name().toLowerCase()}" th:text="${interview.status.name()}" style="font-size: 0.85rem; padding: 6px 12px;">SCHEDULED</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 bg-white border-top">
+            <h5 class="fw-bold mb-3" style="color: #334155;"><i class="bi bi-journal-text text-secondary me-2"></i> Interview Notes</h5>
+            <div class="bg-light p-4 rounded-3 border">
+                <p style="white-space: pre-wrap; font-size: 1.05rem; line-height: 1.6; color: #475569;" class="mb-0" th:text="${interview.notes != null ? interview.notes : 'No notes provided for this interview.'}">Notes...</p>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom">
+        <div>
+            <h1 class="page-title">Schedule Interview</h1>
+            <p class="page-subtitle">Assign an interviewer to evaluate an active candidate application.</p>
+        </div>
+        <a href="/interviews" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Cancel
+        </a>
+    </div>
+
+    <div class="content-card" style="max-width: 700px;">
+        <form th:action="@{/interviews/new}" th:object="${interviewRequest}" method="post">
+            
+            <div class="mb-4">
+                <label for="applicationId" class="form-label fw-bold">Candidate Application</label>
+                <select class="form-select" id="applicationId" th:field="*{applicationId}" required>
+                    <option value="" disabled selected>Select an Application...</option>
+                    <option th:each="app : ${applications}" 
+                            th:value="${app.id}" 
+                            th:text="${app.candidateName} + ' - ' + ${app.jobTitle}">App Selection</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="interviewerId" class="form-label fw-bold">Assign Interviewer</label>
+                <select class="form-select" id="interviewerId" th:field="*{interviewerId}" required>
+                    <option value="" disabled selected>Select active interviewer...</option>
+                    <option th:each="user : ${interviewers}" 
+                            th:value="${user.id}" 
+                            th:text="${user.fullName} + ' (' + ${user.email} + ')'">Assignee</option>
+                </select>
+                 <small class="text-muted mt-2 d-block">System assumes assigned interviewers have been confirmed for availability limits.</small>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="scheduledAt" class="form-label fw-bold">Date & Time</label>
+                    <input type="datetime-local" class="form-control" id="scheduledAt" th:field="*{scheduledAt}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="round" class="form-label fw-bold">Interview Round</label>
+                    <input type="number" class="form-control" id="round" th:field="*{round}" min="1" max="10" placeholder="e.g. 1">
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4 py-2">Confirm Schedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom">
+        <div>
+            <h1 class="page-title">Add New User</h1>
+            <p class="page-subtitle">Provision a new user account.</p>
+        </div>
+        <a href="/users" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Cancel
+        </a>
+    </div>
+
+    <div class="content-card" style="max-width: 600px;">
+        <form th:action="@{/users/new}" th:object="${userRequest}" method="post">
+            
+            <div class="mb-4">
+                <label for="fullName" class="form-label fw-bold">Full Name</label>
+                <input type="text" class="form-control" id="fullName" th:field="*{fullName}" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="email" class="form-label fw-bold">Email Address</label>
+                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="password" class="form-label fw-bold">Temporary Password</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="role" class="form-label fw-bold">User Role</label>
+                <select class="form-select" id="role" th:field="*{role}" required>
+                    <option value="" disabled selected>Select a role...</option>
+                    <option sec:authorize="hasRole('ADMIN')" value="ADMIN">Admin</option>
+                    <option sec:authorize="hasAnyRole('ADMIN', 'RECRUITER')" value="RECRUITER">Recruiter</option>
+                    <option sec:authorize="hasAnyRole('ADMIN', 'RECRUITER')" value="INTERVIEWER">Interviewer</option>
+                </select>
+                <small class="text-muted mt-2 d-block">Recruiters can only assign Recruiter or Interviewer bindings.</small>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4 py-2">Create User</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

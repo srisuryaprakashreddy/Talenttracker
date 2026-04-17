@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-start">
+        <div>
+            <h1 class="page-title">Add New Candidate</h1>
+            <p class="page-subtitle">Add a candidate to the talent pool</p>
+        </div>
+        <a href="/candidates" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Candidates
+        </a>
+    </div>
+
+    <div class="content-card" style="max-width: 600px;">
+        <div class="content-card-body">
+            <!-- Include error parameter check for validation/duplicate email -->
+            <div th:if="${param.error}" class="alert alert-danger">
+                Failed to add candidate. The email might already exist.
+            </div>
+
+            <form th:action="@{/candidates/new}" th:object="${candidateRequest}" method="post">
+                <div class="mb-3">
+                    <label for="fullName" class="form-label fw-bold">Full Name *</label>
+                    <input type="text" id="fullName" th:field="*{fullName}" class="form-control" required placeholder="e.g. Alex Thompson">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-bold">Email Address *</label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required placeholder="alex@example.com">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="phone" class="form-label fw-bold">Phone Number</label>
+                    <input type="text" id="phone" th:field="*{phone}" class="form-control" placeholder="+1-555-0101">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="skills" class="form-label fw-bold">Skills</label>
+                    <input type="text" id="skills" th:field="*{skills}" class="form-control" placeholder="Comma separated, e.g. React, Java, SQL">
+                </div>
+
+                <div class="mb-4">
+                    <label for="resumeUrl" class="form-label fw-bold">Resume URL</label>
+                    <input type="url" id="resumeUrl" th:field="*{resumeUrl}" class="form-control" placeholder="Link to LinkedIn, Portfolio, or Drive PDF">
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/candidates" class="btn btn-light">Cancel</a>
+                    <button type="submit" class="btn-add" style="padding: 8px 24px; border: none; border-radius: 8px;">Add Candidate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

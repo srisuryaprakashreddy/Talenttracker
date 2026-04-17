@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Jobs content fragment -->
+<div th:fragment="content">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Jobs</h1>
+            <p class="page-subtitle">Manage and track all job postings</p>
+        </div>
+        <a href="/jobs/new" class="btn-add" sec:authorize="hasAnyRole('ADMIN','RECRUITER')">
+            <i class="bi bi-plus-lg"></i> Add Job
+        </a>
+    </div>
+
+    <div class="content-card">
+        <!-- Filters -->
+        <form class="filters-bar" th:action="@{/jobs}" method="get">
+            <div class="search-input">
+                <i class="bi bi-search"></i>
+                <input type="text" name="keyword" placeholder="Search jobs by title…" th:value="${keyword}">
+            </div>
+            <select class="filter-select" name="status" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="OPEN" th:selected="${statusFilter == 'OPEN'}">Open</option>
+                <option value="CLOSED" th:selected="${statusFilter == 'CLOSED'}">Closed</option>
+                <option value="ON_HOLD" th:selected="${statusFilter == 'ON_HOLD'}">On Hold</option>
+            </select>
+            <button type="submit" class="btn-add" style="padding:8px 14px;"><i class="bi bi-funnel"></i> Filter</button>
+        </form>
+
+        <!-- Table -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Department</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Applications</th>
+                    <th>Posted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="job : ${jobs}">
+                    <td>
+                        <strong th:text="${job.title}">Senior Frontend Developer</strong>
+                    </td>
+                    <td th:text="${job.department}">Engineering</td>
+                    <td th:text="${job.location}">Remote</td>
+                    <td>
+                        <span class="badge-status"
+                              th:classappend="'badge-' + ${job.status.name().toLowerCase()}"
+                              th:text="${job.status.name()}">OPEN</span>
+                    </td>
+                    <td th:text="${job.applicationCount}">3</td>
+                    <td th:text="${job.formattedDate}">Apr 10, 2026</td>
+                    <td>
+                        <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn-view">View</a>
+                    </td>
+                </tr>
+                <tr th:if="${jobs == null or jobs.isEmpty()}">
+                    <td colspan="7" class="text-center py-4 text-muted">No jobs found</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper" th:if="${totalPages > 1}">
+            <div class="pagination-info">
+                Showing page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">5</span>
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/jobs(page=${currentPage - 1}, keyword=${keyword}, status=${statusFilter})}">Previous</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:href="@{/jobs(page=${i}, keyword=${keyword}, status=${statusFilter})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/jobs(page=${currentPage + 1}, keyword=${keyword}, status=${statusFilter})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+</html>

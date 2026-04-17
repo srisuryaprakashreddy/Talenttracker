@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Dashboard content fragment -->
+<div th:fragment="content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Welcome back, <span th:text="${userName} ?: 'User'">Admin</span>!</h1>
+        <p class="page-subtitle">Here's what's happening with your recruitment today.</p>
+    </div>
+
+    <!-- Stat Cards Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Jobs</div>
+                    <div class="stat-value" th:text="${totalJobs} ?: '0'">5</div>
+                </div>
+                <div class="stat-icon purple">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Candidates</div>
+                    <div class="stat-value" th:text="${totalCandidates} ?: '0'">6</div>
+                </div>
+                <div class="stat-icon green">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Applications</div>
+                    <div class="stat-value" th:text="${totalApplications} ?: '0'">7</div>
+                </div>
+                <div class="stat-icon blue">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Interviews Today</div>
+                    <div class="stat-value" th:text="${interviewsToday} ?: '0'">0</div>
+                </div>
+                <div class="stat-icon orange">
+                    <i class="bi bi-calendar-event-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Status Overview -->
+    <div class="content-card mb-4">
+        <div class="content-card-header">
+            <h5>Application Status Overview</h5>
+        </div>
+        <div class="content-card-body">
+            <div class="status-overview">
+                <div class="status-item applied">
+                    <span class="status-count" th:text="${appliedCount} ?: '0'">1</span>
+                    <div class="status-label">Applied</div>
+                </div>
+                <div class="status-item shortlisted">
+                    <span class="status-count" th:text="${shortlistedCount} ?: '0'">2</span>
+                    <div class="status-label">Shortlisted</div>
+                </div>
+                <div class="status-item interview">
+                    <span class="status-count" th:text="${interviewingCount} ?: '0'">2</span>
+                    <div class="status-label">Interview</div>
+                </div>
+                <div class="status-item selected">
+                    <span class="status-count" th:text="${offeredCount} ?: '0'">1</span>
+                    <div class="status-label">Offered</div>
+                </div>
+                <div class="status-item selected">
+                    <span class="status-count" th:text="${hiredCount} ?: '0'">0</span>
+                    <div class="status-label">Hired</div>
+                </div>
+                <div class="status-item rejected">
+                    <span class="status-count" th:text="${rejectedCount} ?: '0'">1</span>
+                    <div class="status-label">Rejected</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Row: Today's Interviews + Recent Applications -->
+    <div class="row g-3">
+        <!-- Today's Interviews -->
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h5><i class="bi bi-calendar-event"></i> Today's Interviews</h5>
+                </div>
+                <div class="content-card-body">
+                    <div th:if="${todayInterviews != null and !todayInterviews.isEmpty()}">
+                        <div class="list-item" th:each="interview : ${todayInterviews}">
+                            <div class="list-item-info">
+                                <h6 th:text="${interview.candidateName}">Alex Thompson</h6>
+                                <p th:text="${interview.jobTitle}">Senior Frontend Developer</p>
+                            </div>
+                            <div class="list-item-meta">
+                                <span class="badge-status badge-scheduled">
+                                    Round <span th:text="${interview.round}">1</span>
+                                </span>
+                                <span th:text="${interview.time}">4:30 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${todayInterviews == null or todayInterviews.isEmpty()}" class="text-center py-4">
+                        <i class="bi bi-calendar-check text-muted" style="font-size:32px;"></i>
+                        <p class="text-muted mt-2 mb-0">No interviews scheduled for today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="col-lg-6">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h5>Recent Applications</h5>
+                </div>
+                <div class="content-card-body">
+                    <div th:if="${recentApplications != null and !recentApplications.isEmpty()}">
+                        <div class="list-item" th:each="app : ${recentApplications}">
+                            <div class="list-item-info">
+                                <h6 th:text="${app.candidateName}">Alex Thompson</h6>
+                                <p th:text="${app.jobTitle}">Senior Frontend Developer</p>
+                                <small class="text-muted" th:text="${app.appliedDate}">Mar 16, 2026</small>
+                            </div>
+                            <span class="badge-status"
+                                  th:classappend="'badge-' + ${app.status.name().toLowerCase()}"
+                                  th:text="${app.status.name().toLowerCase()}">interview</span>
+                        </div>
+                    </div>
+                    <div th:if="${recentApplications == null or recentApplications.isEmpty()}" class="text-center py-4">
+                        <i class="bi bi-file-earmark text-muted" style="font-size:32px;"></i>
+                        <p class="text-muted mt-2 mb-0">No recent applications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</html>

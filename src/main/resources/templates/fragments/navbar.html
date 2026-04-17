@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Navbar Fragment -->
+<header th:fragment="navbar" class="top-navbar">
+    <div class="user-info">
+        <div class="text-end">
+            <div class="user-name" th:text="${userFullName} ?: 'User'">Admin User</div>
+            <div class="user-role" th:text="${userRole} ?: 'User'">ADMIN</div>
+        </div>
+        <div class="user-avatar" th:text="${userInitial} ?: 'A'">A</div>
+    </div>
+</header>
+
+</html>

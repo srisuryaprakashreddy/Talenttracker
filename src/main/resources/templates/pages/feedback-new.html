@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom">
+        <div>
+            <h1 class="page-title">Submit Feedback Verdict</h1>
+            <p class="page-subtitle">Evaluate your assigned candidates and declare an outcome.</p>
+        </div>
+        <a href="/feedback" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Cancel
+        </a>
+    </div>
+
+    <div class="content-card" style="max-width: 800px;">
+        <form th:action="@{/feedback/new}" th:object="${feedbackRequest}" method="post">
+            
+            <div class="mb-4">
+                <label for="interviewId" class="form-label fw-bold">Select Active Interview</label>
+                <select class="form-select" id="interviewId" th:field="*{interviewId}" required>
+                    <option value="" disabled selected>Pending Interview Assignment...</option>
+                    <!-- Iterating over interviews -->
+                    <option th:each="inv : ${interviews}" 
+                            th:value="${inv.id}" 
+                            th:text="'[' + ${inv.date} + '] ' + ${inv.candidateName} + ' - ' + ${inv.jobTitle} + ' (Round ' + ${inv.round} + ')'">Inv Selection</option>
+                </select>
+                <small class="text-muted mt-2 d-block">You can only submit feedback for interviews you have completed.</small>
+            </div>
+
+            <div class="row mb-4 bg-light p-3 border rounded">
+                <div class="col-md-6">
+                    <label for="rating" class="form-label fw-bold">Technical Rating (1-5)</label>
+                    <input type="number" class="form-control" id="rating" th:field="*{rating}" min="1" max="5" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="verdict" class="form-label fw-bold text-primary">Final Outcome Verdict</label>
+                    <select class="form-select border-primary" id="verdict" th:field="*{verdict}" required>
+                        <option value="" disabled selected>Make a Hiring Choice...</option>
+                        <option value="STRONG_YES" class="text-success fw-bold">STRONG YES (Hire Immediately)</option>
+                        <option value="YES" class="text-success">YES (Move Forward / Offer)</option>
+                        <option value="NEUTRAL" class="text-warning">NEUTRAL</option>
+                        <option value="NO" class="text-danger">NO (Reject)</option>
+                        <option value="STRONG_NO" class="text-danger fw-bold">STRONG NO (Hard Reject)</option>
+                    </select>
+                    <small class="text-muted mt-2 d-block fw-bold">Warning: Choosing "Yes" will shift Application to Hired/Offered. Choosing "No" shifts to Rejected.</small>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="comments" class="form-label fw-bold">Detailed Evaluation</label>
+                <textarea class="form-control" id="comments" th:field="*{comments}" rows="6" placeholder="Provide extensive review of skills and rationale for your verdict..."></textarea>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4 py-2 flex-grow-1"><i class="bi bi-send-check"></i> Submit Official Feedback</button>
+            </div>
+        </form>
+    </div>
+</div>
+</html>

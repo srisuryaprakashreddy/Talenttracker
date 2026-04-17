@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="content">
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom">
+        <div>
+            <h1 class="page-title">User Management</h1>
+            <p class="page-subtitle">Control access, roles, and status of application users.</p>
+        </div>
+        <div sec:authorize="hasAnyRole('ADMIN', 'RECRUITER')">
+            <a href="/users/new" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Add User
+            </a>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Jobs Posted</th>
+                    <th>Interviews</th>
+                    <th sec:authorize="hasRole('ADMIN')">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users}">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-sm" th:text="${user.fullName.substring(0,1).toUpperCase()}">A</span>
+                            <span th:text="${user.fullName}">Admin Name</span>
+                        </div>
+                    </td>
+                    <td th:text="${user.email}">user@talenttrack.com</td>
+                    <td>
+                        <span class="badge bg-secondary" th:text="${user.role}">ADMIN</span>
+                    </td>
+                    <td>
+                        <span class="badge" th:classappend="${user.active} ? 'bg-success' : 'bg-danger'"
+                              th:text="${user.active} ? 'Active' : 'Inactive'">Active</span>
+                    </td>
+                    <td th:text="${user.jobCount}">0</td>
+                    <td th:text="${user.interviewCount}">0</td>
+                    <td sec:authorize="hasRole('ADMIN')">
+                        <div class="d-flex gap-2">
+                            <form th:action="@{/users/{id}/toggle(id=${user.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm" th:classappend="${user.active} ? 'btn-outline-danger' : 'btn-outline-success'">
+                                    <i class="bi" th:classappend="${user.active} ? 'bi-lock-fill' : 'bi-unlock-fill'"></i>
+                                    <span th:text="${user.active} ? 'Deactivate' : 'Activate'">Action</span>
+                                </button>
+                            </form>
+                            <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this user? This will deactivate them.')">
+                                <button type="submit" class="btn-delete" title="Delete User">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</html>

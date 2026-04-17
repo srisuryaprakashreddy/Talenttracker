@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Interviews content fragment -->
+<div th:fragment="content">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Interviews</h1>
+            <p class="page-subtitle">Schedule and evaluate candidate assessments</p>
+        </div>
+        <div sec:authorize="hasAnyRole('ADMIN', 'RECRUITER')">
+            <a href="/interviews/new" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Schedule Interview
+            </a>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <!-- Filters -->
+        <form class="filters-bar" th:action="@{/interviews}" method="get">
+            <div class="search-input">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search interviews…" disabled>
+            </div>
+            <select class="filter-select" name="status" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="SCHEDULED" th:selected="${statusFilter == 'SCHEDULED'}">Scheduled</option>
+                <option value="COMPLETED" th:selected="${statusFilter == 'COMPLETED'}">Completed</option>
+                <option value="CANCELLED" th:selected="${statusFilter == 'CANCELLED'}">Cancelled</option>
+            </select>
+        </form>
+
+        <!-- Table -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Job Position</th>
+                    <th>Interviewer</th>
+                    <th>Date &amp; Time</th>
+                    <th>Round</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="interview : ${interviews}">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-sm"
+                                  th:text="${interview.candidateName != null ? interview.candidateName.substring(0,1) : '?'}">A</span>
+                            <span th:text="${interview.candidateName}">Alex Thompson</span>
+                        </div>
+                    </td>
+                    <td th:text="${interview.jobTitle}">Senior Frontend Developer</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-sm"
+                                  th:text="${interview.interviewerName != null ? interview.interviewerName.substring(0,1) : '?'}">D</span>
+                            <span th:text="${interview.interviewerName}">David Park</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <i class="bi bi-calendar3 me-1"></i>
+                            <span th:text="${interview.date}">Apr 15, 2026</span>
+                        </div>
+                        <div class="text-muted" style="font-size:12px;">
+                            <i class="bi bi-clock me-1"></i>
+                            <span th:text="${interview.time}">7:30 PM</span>
+                        </div>
+                    </td>
+                    <td><span class="badge-status badge-phone">Round <span th:text="${interview.round}">1</span></span></td>
+                    <td>
+                        <span class="badge-status"
+                              th:classappend="'badge-' + ${interview.status.name().toLowerCase()}"
+                              th:text="${interview.status.name()}">SCHEDULED</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/interviews/{id}(id=${interview.id})}" class="btn-view">View</a>
+                    </td>
+                </tr>
+                <tr th:if="${interviews == null or interviews.isEmpty()}">
+                    <td colspan="7" class="text-center py-4 text-muted">No interviews found</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</html>

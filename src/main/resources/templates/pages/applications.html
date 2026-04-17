@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Applications content fragment -->
+<div th:fragment="content">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Applications</h1>
+            <p class="page-subtitle">Track and manage all job applications</p>
+        </div>
+        <div sec:authorize="hasAnyRole('ADMIN','RECRUITER')">
+            <a href="/applications/new" class="btn-add">
+                <i class="bi bi-plus-lg"></i> Assign Candidate
+            </a>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <!-- Filters -->
+        <form class="filters-bar" th:action="@{/applications}" method="get">
+            <div class="search-input">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Search applications..." disabled>
+            </div>
+            <select class="filter-select" name="status" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="APPLIED" th:selected="${statusFilter == 'APPLIED'}">Applied</option>
+                <option value="SHORTLISTED" th:selected="${statusFilter == 'SHORTLISTED'}">Shortlisted</option>
+                <option value="INTERVIEWING" th:selected="${statusFilter == 'INTERVIEWING'}">Interviewing</option>
+                <option value="OFFERED" th:selected="${statusFilter == 'OFFERED'}">Offered</option>
+                <option value="REJECTED" th:selected="${statusFilter == 'REJECTED'}">Rejected</option>
+                <option value="HIRED" th:selected="${statusFilter == 'HIRED'}">Hired</option>
+            </select>
+        </form>
+
+        <!-- Table -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Job Position</th>
+                    <th>Status</th>
+                    <th>Applied Date</th>
+                    <th sec:authorize="hasAnyRole('ADMIN','RECRUITER','INTERVIEWER')">Change Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="app : ${applications}">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="avatar-sm"
+                                  th:text="${app.candidateName != null ? app.candidateName.substring(0,1) : '?'}">A</span>
+                            <span th:text="${app.candidateName}">Alex Thompson</span>
+                        </div>
+                    </td>
+                    <td th:text="${app.jobTitle}">Senior Frontend Developer</td>
+                    <td>
+                        <span class="badge-status"
+                              th:classappend="'badge-' + ${app.status.name().toLowerCase()}"
+                              th:text="${app.status.name()}">APPLIED</span>
+                    </td>
+                    <td th:text="${app.appliedDate}">Mar 16, 2026</td>
+                    <td sec:authorize="hasAnyRole('ADMIN','RECRUITER','INTERVIEWER')">
+                        <form th:action="@{/applications/{id}/status(id=${app.id})}" method="post" class="d-inline">
+                            <select name="status" class="filter-select" style="min-width:120px;padding:4px 8px;font-size:12px;" onchange="this.form.submit()">
+                                <option value="" disabled selected>Change…</option>
+                                <option value="APPLIED">Applied</option>
+                                <option value="SHORTLISTED">Shortlisted</option>
+                                <option value="INTERVIEWING">Interviewing</option>
+                                <option value="OFFERED">Offered</option>
+                                <option value="HIRED">Hired</option>
+                                <option value="REJECTED">Rejected</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <a th:href="@{/applications/{id}(id=${app.id})}" class="btn-view">View</a>
+                    </td>
+                </tr>
+                <tr th:if="${applications == null or applications.isEmpty()}">
+                    <td colspan="6" class="text-center py-4 text-muted">No applications found</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</html>
