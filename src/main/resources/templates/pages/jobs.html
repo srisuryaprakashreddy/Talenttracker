@@ -59,7 +59,14 @@
                     <td th:text="${job.applicationCount}">3</td>
                     <td th:text="${job.formattedDate}">Apr 10, 2026</td>
                     <td>
-                        <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn-view">View</a>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn-view">View</a>
+                            <form th:action="@{/jobs/{id}/delete(id=${job.id})}" method="post" 
+                                  class="d-inline" sec:authorize="hasAnyRole('ADMIN','RECRUITER')"
+                                  onsubmit="return confirm('Delete this job and all associated applications?')">
+                                <button type="submit" class="btn-delete" title="Delete Job"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <tr th:if="${jobs == null or jobs.isEmpty()}">

@@ -92,13 +92,15 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/login", "/css/**", "/js/**", "/images/**",
                                      "/swagger-ui/**", "/swagger-ui.html",
                                      "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                     .requestMatchers("/reports").hasAnyRole("ADMIN", "RECRUITER")
                     .requestMatchers("/users/**").hasAnyRole("ADMIN", "RECRUITER")
-                    .requestMatchers("/candidates/*/delete").hasAnyRole("ADMIN", "RECRUITER")
+                    .requestMatchers("/candidates/*/delete", "/jobs/*/delete", "/applications/*/delete", "/interviews/*/delete", "/feedback/*/delete").hasAnyRole("ADMIN", "RECRUITER")
+                    .requestMatchers("/jobs/new", "/candidates/new", "/applications/new", "/interviews/new").hasAnyRole("ADMIN", "RECRUITER")
                     .requestMatchers("/applications/*/status").authenticated()
                     .anyRequest().authenticated()
             )

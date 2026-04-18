@@ -79,7 +79,14 @@
                               th:text="${interview.status.name()}">SCHEDULED</span>
                     </td>
                     <td>
-                        <a th:href="@{/interviews/{id}(id=${interview.id})}" class="btn-view">View</a>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/interviews/{id}(id=${interview.id})}" class="btn-view">View</a>
+                            <form th:action="@{/interviews/{id}/delete(id=${interview.id})}" method="post" 
+                                  class="d-inline" sec:authorize="hasAnyRole('ADMIN','RECRUITER')"
+                                  onsubmit="return confirm('Cancel and delete this interview?')">
+                                <button type="submit" class="btn-delete" title="Delete Interview"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <tr th:if="${interviews == null or interviews.isEmpty()}">

@@ -8,9 +8,18 @@
             <h1 class="page-title">Application Details</h1>
             <p class="page-subtitle">Full application information</p>
         </div>
-        <a href="/applications" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
+        <div class="d-flex gap-2">
+            <form th:action="@{/applications/{id}/delete(id=${app.id})}" method="post" 
+                  class="d-inline" sec:authorize="hasAnyRole('ADMIN','RECRUITER')"
+                  onsubmit="return confirm('Delete this application permanently?')">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-trash3"></i> Delete
+                </button>
+            </form>
+            <a href="/applications" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
     </div>
 
     <div class="row g-4">

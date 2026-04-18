@@ -104,4 +104,10 @@ public class JobService {
         job.setStatus(status);
         return JobResponse.fromEntity(jobRepository.save(job));
     }
+
+    public void delete(Long id) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Job", "id", id));
+        jobRepository.delete(job);
+    }
 }

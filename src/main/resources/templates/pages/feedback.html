@@ -83,7 +83,14 @@
                     </td>
                     <td th:text="${fb.date}">Apr 10, 2026</td>
                     <td>
-                        <a th:href="@{/feedback/{id}(id=${fb.id})}" class="btn-view">View</a>
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/feedback/{id}(id=${fb.id})}" class="btn-view">View</a>
+                            <form th:action="@{/feedback/{id}/delete(id=${fb.id})}" method="post" 
+                                  class="d-inline" sec:authorize="hasAnyRole('ADMIN','RECRUITER')"
+                                  onsubmit="return confirm('Delete this feedback permanently?')">
+                                <button type="submit" class="btn-delete" title="Delete Feedback"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 <tr th:if="${feedbacks == null or feedbacks.isEmpty()}">

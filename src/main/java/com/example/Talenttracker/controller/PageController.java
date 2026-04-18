@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,10 +64,29 @@ public class PageController {
         model.addAttribute("totalCandidates", candidateService.getAll().size());
         model.addAttribute("totalApplications", applicationService.getAll().size());
 
+        boolean isInterviewer = false;
+        Long userId = null;
+        if (auth != null) {
+            isInterviewer = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_INTERVIEWER"));
+            userId = userRepository.findByEmail(auth.getName()).map(com.example.Talenttracker.model.User::getId).orElse(null);
+        }
+
         // Today's interviews
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
         List<InterviewResponse> todayInterviews = interviewService.getByDateRange(startOfDay, endOfDay);
+        
+        if (isInterviewer && userId != null) {
+            final Long currentUserId = userId; // effectively final for lambda
+            todayInterviews = todayInterviews.stream()
+                .filter(i -> currentUserId.equals(i.getInterviewerId()))
+                .toList();
+            model.addAttribute("totalJobs", 0);
+            model.addAttribute("totalCandidates", 0);
+            model.addAttribute("totalApplications", 0);
+        }
+
         model.addAttribute("interviewsToday", todayInterviews.size());
         model.addAttribute("todayInterviews", todayInterviews);
 
@@ -141,6 +161,17 @@ public class PageController {
         return "redirect:/jobs";
     }
 
+    @PostMapping("/jobs/{id}/delete")
+    public String deleteJob(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            jobService.delete(id);
+            ra.addFlashAttribute("success", "Job deleted successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete job: " + e.getMessage());
+        }
+        return "redirect:/jobs";
+    }
+
     // ══════════════════════════════════════════════════════════
     //  CANDIDATES
     // ══════════════════════════════════════════════════════════
@@ -180,8 +211,13 @@ public class PageController {
     }
 
     @PostMapping("/candidates/{id}/delete")
-    public String deleteCandidate(@PathVariable Long id) {
-        candidateService.delete(id);
+    public String deleteCandidate(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            candidateService.delete(id);
+            ra.addFlashAttribute("success", "Candidate deleted successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete candidate: " + e.getMessage());
+        }
         return "redirect:/candidates";
     }
 
@@ -229,6 +265,17 @@ public class PageController {
         return "redirect:/applications";
     }
 
+    @PostMapping("/applications/{id}/delete")
+    public String deleteApplication(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            applicationService.delete(id);
+            ra.addFlashAttribute("success", "Application deleted successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete application: " + e.getMessage());
+        }
+        return "redirect:/applications";
+    }
+
     // ══════════════════════════════════════════════════════════
     //  INTERVIEWS
     // ══════════════════════════════════════════════════════════
@@ -238,7 +285,16 @@ public class PageController {
                              @RequestParam(required = false) String status) {
         setupLayout(model, auth, "Interviews — TalentTrack Lite", "pages/interviews :: content");
 
-        List<InterviewResponse> interviews = interviewService.getAll();
+        boolean isInterviewer = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_INTERVIEWER"));
+                
+        List<InterviewResponse> interviews;
+        if (isInterviewer) {
+            Long userId = userRepository.findByEmail(auth.getName()).get().getId();
+            interviews = interviewService.getByInterviewer(userId);
+        } else {
+            interviews = interviewService.getAll();
+        }
         if (status != null && !status.isEmpty()) {
             try {
                 InterviewStatus intStatus = InterviewStatus.valueOf(status);
@@ -266,6 +322,17 @@ public class PageController {
         return "redirect:/interviews";
     }
 
+    @PostMapping("/interviews/{id}/delete")
+    public String deleteInterview(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            interviewService.delete(id);
+            ra.addFlashAttribute("success", "Interview deleted successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete interview: " + e.getMessage());
+        }
+        return "redirect:/interviews";
+    }
+
     // ══════════════════════════════════════════════════════════
     //  FEEDBACK
     // ══════════════════════════════════════════════════════════
@@ -275,7 +342,16 @@ public class PageController {
                            @RequestParam(required = false) String verdict) {
         setupLayout(model, auth, "Feedback — TalentTrack Lite", "pages/feedback :: content");
 
-        List<FeedbackResponse> feedbacks = feedbackService.getAll();
+        boolean isInterviewer = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_INTERVIEWER"));
+        
+        List<FeedbackResponse> feedbacks;
+        if (isInterviewer) {
+            Long userId = userRepository.findByEmail(auth.getName()).get().getId();
+            feedbacks = feedbackService.getByUser(userId);
+        } else {
+            feedbacks = feedbackService.getAll();
+        }
         if (verdict != null && !verdict.isEmpty()) {
             try {
                 FeedbackVerdict fv = FeedbackVerdict.valueOf(verdict);
@@ -292,7 +368,17 @@ public class PageController {
     public String newFeedbackForm(Model model, Authentication auth) {
         setupLayout(model, auth, "Submit Feedback — TalentTrack Lite", "pages/feedback-new :: content");
         model.addAttribute("feedbackRequest", new FeedbackRequest());
-        model.addAttribute("interviews", interviewService.getAll());
+        boolean isInterviewer = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_INTERVIEWER"));
+        
+        List<InterviewResponse> dropdownInterviews;
+        if (isInterviewer) {
+            Long userId = userRepository.findByEmail(auth.getName()).get().getId();
+            dropdownInterviews = interviewService.getByInterviewer(userId);
+        } else {
+            dropdownInterviews = interviewService.getAll();
+        }
+        model.addAttribute("interviews", dropdownInterviews);
         return "layouts/main";
     }
 
@@ -301,6 +387,17 @@ public class PageController {
         String email = auth.getName();
         Long givenById = userRepository.findByEmail(email).get().getId();
         feedbackService.create(request, givenById);
+        return "redirect:/feedback";
+    }
+
+    @PostMapping("/feedback/{id}/delete")
+    public String deleteFeedback(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            feedbackService.delete(id);
+            ra.addFlashAttribute("success", "Feedback deleted successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete feedback: " + e.getMessage());
+        }
         return "redirect:/feedback";
     }
 
@@ -379,8 +476,13 @@ public class PageController {
     }
 
     @PostMapping("/users/{id}/delete")
-    public String deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public String deleteUser(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            userService.deleteUser(id);
+            ra.addFlashAttribute("success", "User deactivated successfully.");
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Failed to delete user: " + e.getMessage());
+        }
         return "redirect:/users";
     }
 

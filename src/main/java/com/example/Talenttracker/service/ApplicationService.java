@@ -109,4 +109,10 @@ public class ApplicationService {
 
         return ApplicationResponse.fromEntity(saved);
     }
+
+    public void delete(Long id) {
+        Application app = applicationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Application", "id", id));
+        applicationRepository.delete(app);
+    }
 }

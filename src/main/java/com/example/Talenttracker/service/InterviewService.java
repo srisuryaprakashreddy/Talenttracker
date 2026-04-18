@@ -86,4 +86,10 @@ public class InterviewService {
         interview.setStatus(status);
         return InterviewResponse.fromEntity(interviewRepository.save(interview));
     }
+
+    public void delete(Long id) {
+        Interview interview = interviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Interview", "id", id));
+        interviewRepository.delete(interview);
+    }
 }

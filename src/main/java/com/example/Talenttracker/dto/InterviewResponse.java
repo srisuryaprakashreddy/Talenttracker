@@ -18,6 +18,7 @@ public class InterviewResponse {
     private String candidateName;
     private Long jobId;
     private String jobTitle;
+    private Long interviewerId;
     private String interviewerName;
     private LocalDateTime scheduledAt;
     private Integer round;
@@ -47,6 +48,7 @@ public class InterviewResponse {
                 .candidateName(interview.getApplication().getCandidate().getFullName())
                 .jobId(interview.getApplication().getJob().getId())
                 .jobTitle(interview.getApplication().getJob().getTitle())
+                .interviewerId(interview.getInterviewer().getId())
                 .interviewerName(interview.getInterviewer().getFullName())
                 .scheduledAt(interview.getScheduledAt())
                 .round(interview.getRound())

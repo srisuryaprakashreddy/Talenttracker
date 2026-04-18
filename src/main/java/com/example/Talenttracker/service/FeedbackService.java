@@ -89,4 +89,10 @@ public class FeedbackService {
                 .map(FeedbackResponse::fromEntity)
                 .toList();
     }
+
+    public void delete(Long id) {
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Feedback", "id", id));
+        feedbackRepository.delete(feedback);
+    }
 }
