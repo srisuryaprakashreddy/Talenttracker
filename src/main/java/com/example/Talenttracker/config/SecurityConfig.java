@@ -94,7 +94,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/login", "/css/**", "/js/**", "/images/**",
+                    .requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**",
                                      "/swagger-ui/**", "/swagger-ui.html",
                                      "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                     .requestMatchers("/reports").hasAnyRole("ADMIN", "RECRUITER")

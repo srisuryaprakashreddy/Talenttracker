@@ -51,6 +51,25 @@ public class PageController {
         return "pages/login";
     }
 
+    @GetMapping("/register")
+    public String registerPage(Model model) {
+        model.addAttribute("registerRequest", new RegisterRequest());
+        model.addAttribute("roles", Role.values());
+        return "pages/register";
+    }
+
+    @PostMapping("/register")
+    public String handleRegister(@ModelAttribute("registerRequest") RegisterRequest request, RedirectAttributes ra) {
+        try {
+            userService.register(request);
+            ra.addFlashAttribute("success", "Registration successful! Please login.");
+            return "redirect:/login";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", "Registration failed: " + e.getMessage());
+            return "redirect:/register";
+        }
+    }
+
     // ══════════════════════════════════════════════════════════
     //  DASHBOARD
     // ══════════════════════════════════════════════════════════
